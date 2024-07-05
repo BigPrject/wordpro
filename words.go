@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"log"
 	"os"
 )
 
@@ -47,7 +48,7 @@ func (t *Trie) insert(word string) {
 	currentNode.terminal = true
 }
 
-func ImportWords(testTrie *Trie) *Trie {
+func ImportWords() *Trie {
 	TestTrie := StartTrie()
 	file, err := os.Open("words.txt")
 	if err != nil {
@@ -59,7 +60,7 @@ func ImportWords(testTrie *Trie) *Trie {
 		TestTrie.insert(reader.Text())
 
 	}
-
-	return testTrie
+	log.Println("Loaded Words!!")
+	return TestTrie
 
 }

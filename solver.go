@@ -14,7 +14,7 @@ type wordResponse struct {
 	Words []Word `json:"words"`
 }
 
-func search(wordTrie *Trie, boggle string) string {
+func solve(wordTrie *Trie, boggle string) string {
 
 	var board [4][4]uint8
 	var words = make(map[string]Word)
@@ -49,16 +49,12 @@ func search(wordTrie *Trie, boggle string) string {
 		fmt.Println("error occured", err)
 	}
 	return string(output)
-
 }
-
-// recursive dfs function
 
 func dfssearch(t *Trie, currentNode *trieNode, board [4][4]uint8, row int, column int, visited [4][4]bool, path string, pathTaken [][]int, foundWords *map[string]Word) {
 	if (row >= 4 || column >= 4) || (row < 0 || column < 0) {
 		return
 	}
-
 	if visited[row][column] {
 		return
 	}
@@ -74,8 +70,8 @@ func dfssearch(t *Trie, currentNode *trieNode, board [4][4]uint8, row int, colum
 	path += string(board[row][column])
 	temp := []int{row, column}
 	pathTaken = append(pathTaken, temp)
-
 	if currentNode.terminal {
+
 		current := Word{Word: path, Path: pathTaken}
 		(*foundWords)[path] = current
 		return

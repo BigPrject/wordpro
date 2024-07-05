@@ -12,7 +12,7 @@ type postRecived struct {
 	Board string
 }
 
-var wordTrie *Trie = StartTrie()
+var wordTrie *Trie = ImportWords()
 
 func main() {
 	router := http.NewServeMux()
@@ -45,8 +45,7 @@ func postSolve(w http.ResponseWriter, r *http.Request) {
 	log.Printf("board is %v", recivedData.Board)
 
 	boggle := recivedData.Board
-
-	jsonResponse := search(wordTrie, boggle)
+	jsonResponse := solve(wordTrie, boggle)
 
 	log.Println(jsonResponse)
 
