@@ -1,87 +1,24 @@
 package main
 
-/*
 import (
-	"bufio"
+	"encoding/json"
 	"fmt"
-	"os"
 )
 
-const size int = 26
-
-type trieNode struct {
-	//size of possible characters in trie
-
-	children [size]*trieNode
-
-	terminal bool
+type Word struct {
+	Word string  `json:"word:"`
+	Path [][]int `json:"path:"`
 }
 
-type Trie struct {
-	root *trieNode
+type wordResponse struct {
+	Words []Word `json:"words"`
 }
 
-// create trie with emtpy
-func startTrie() *Trie {
-	result := &Trie{root: &trieNode{}}
-	return result
+func search(wordTrie *Trie, boggle string) string {
 
-}
-
-// insert a word and it will add it to the trie
-
-func (t *Trie) insert(word string) {
-
-	wordLength := len(word)
-	currentNode := t.root
-	for i := 0; i < wordLength; i++ {
-		charIndex := word[i] - 'a'
-		if currentNode.children[charIndex] == nil {
-
-			var node *trieNode = &trieNode{}
-			currentNode.children[charIndex] = node
-
-		}
-		currentNode = currentNode.children[charIndex]
-
-	}
-	currentNode.terminal = true
-}
-
-// search
-
-func (t *Trie) search(word string) bool {
-
-	currentNode := t.root
-	wordLength := len(word)
-	for i := 0; i < wordLength; i++ {
-		charIndex := word[i] - 'a'
-		if currentNode.children[charIndex] == nil {
-			return false
-		}
-		currentNode = currentNode.children[charIndex]
-
-	}
-	return currentNode.terminal
-
-}
-
-func main() {
-
-	testTrie := startTrie()
-	file, err := os.Open("words.txt")
-	if err != nil {
-		fmt.Println(err.Error())
-	}
-	reader := bufio.NewScanner(file)
-
-	for reader.Scan() {
-		testTrie.insert(reader.Text())
-
-	}
 	var board [4][4]uint8
-	boggle := "drpxgarimroeaitt"
-	var words []string
+	var words = make(map[string]Word)
+	var pathTaken [][]int
 	var visited [4][4]bool
 
 	//index value for the string
@@ -94,16 +31,30 @@ func main() {
 		}
 
 	}
+
+	// to loop through every starting position on the board
 	for i := 0; i < len(board); i++ {
 		for j := 0; j < len(board[i]); j++ {
-			dfssearch(testTrie, testTrie.root, board, i, j, visited, "", &words)
+			dfssearch(wordTrie, wordTrie.root, board, i, j, visited, "", pathTaken, &words)
 		}
 	}
-	fmt.Printf("words: %v\n", words)
+	var resp wordResponse
+	for _, wordType := range words {
+
+		resp.Words = append(resp.Words, wordType)
+
+	}
+	output, err := json.MarshalIndent(resp, "", "")
+	if err != nil {
+		fmt.Println("error occured", err)
+	}
+	return string(output)
 
 }
 
-func dfssearch(t *Trie, currentNode *trieNode, board [4][4]uint8, row int, column int, visited [4][4]bool, path string, foundWords *[]string) {
+// recursive dfs function
+
+func dfssearch(t *Trie, currentNode *trieNode, board [4][4]uint8, row int, column int, visited [4][4]bool, path string, pathTaken [][]int, foundWords *map[string]Word) {
 	if (row >= 4 || column >= 4) || (row < 0 || column < 0) {
 		return
 	}
@@ -121,10 +72,13 @@ func dfssearch(t *Trie, currentNode *trieNode, board [4][4]uint8, row int, colum
 	}
 
 	path += string(board[row][column])
+	temp := []int{row, column}
+	pathTaken = append(pathTaken, temp)
 
 	if currentNode.terminal {
-		*foundWords = append(*foundWords, path)
-
+		current := Word{Word: path, Path: pathTaken}
+		(*foundWords)[path] = current
+		return
 	}
 
 	currentNode = currentNode.children[letter]
@@ -138,11 +92,10 @@ func dfssearch(t *Trie, currentNode *trieNode, board [4][4]uint8, row int, colum
 
 		nCol := int(column) + d[1]
 
-		dfssearch(t, currentNode, board, nRow, nCol, visited, path, foundWords)
+		dfssearch(t, currentNode, board, nRow, nCol, visited, path, pathTaken, foundWords)
 
 	}
 
 	visited[row][column] = false
 
 }
-*/
