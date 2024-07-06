@@ -7,14 +7,14 @@ import (
 
 type Word struct {
 	Word string  `json:"word:"`
-	Path [][]int `json:"path:"`
+	Path [][]int `json:"path"`
 }
 
 type wordResponse struct {
 	Words []Word `json:"words"`
 }
 
-func solve(wordTrie *Trie, boggle string) string {
+func solve(wordTrie *Trie, boggle string) []byte {
 
 	var board [4][4]uint8
 	var words = make(map[string]Word)
@@ -48,7 +48,7 @@ func solve(wordTrie *Trie, boggle string) string {
 	if err != nil {
 		fmt.Println("error occured", err)
 	}
-	return string(output)
+	return output
 }
 
 func dfssearch(t *Trie, currentNode *trieNode, board [4][4]uint8, row int, column int, visited [4][4]bool, path string, pathTaken [][]int, foundWords *map[string]Word) {
