@@ -25,6 +25,7 @@ func main() {
 
 func getSolve(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("boggle solver endpoint")
+
 }
 
 func postSolve(w http.ResponseWriter, r *http.Request) {
@@ -32,7 +33,7 @@ func postSolve(w http.ResponseWriter, r *http.Request) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		log.Printf("Could not read request %v", err)
-		w.WriteHeader(http.StatusInternalServerError)
+		w.WriteHeader(http.StatusInternalServerError) // HTTP 500
 		return
 	}
 
@@ -46,7 +47,6 @@ func postSolve(w http.ResponseWriter, r *http.Request) {
 
 	boggle := recivedData.Board
 	jsonResponse := solve(wordTrie, boggle)
-
-	log.Println(jsonResponse)
+	w.Write(jsonResponse)
 
 }
